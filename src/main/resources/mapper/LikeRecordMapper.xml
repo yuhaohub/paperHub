@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuhao.yupicturebackend.mapper.LikeRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.yuhao.yupicturebackend.model.entity.LikeRecord">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="picId" column="picId" jdbcType="BIGINT"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,picId,userId,
+        status,createTime,updateTime
+    </sql>
+</mapper>
