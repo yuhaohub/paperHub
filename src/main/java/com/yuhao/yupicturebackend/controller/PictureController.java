@@ -23,6 +23,7 @@ import com.yuhao.yupicturebackend.manager.auth.StpKit;
 import com.yuhao.yupicturebackend.manager.auth.annotation.SaSpaceCheckPermission;
 import com.yuhao.yupicturebackend.manager.auth.model.SpaceUserPermissionConstant;
 import com.yuhao.yupicturebackend.model.dto.picture.*;
+import com.yuhao.yupicturebackend.model.entity.LikeRecord;
 import com.yuhao.yupicturebackend.model.entity.Picture;
 import com.yuhao.yupicturebackend.model.entity.Space;
 import com.yuhao.yupicturebackend.model.entity.User;
@@ -400,17 +401,31 @@ public class PictureController {
      * 图片点赞
      */
     @PostMapping("/like")
-    public BaseResponse<Boolean> likePicture(@RequestBody PictureLikeRequest pictureLikeRequest) {
+    public BaseResponse<Boolean> likePicture(@RequestBody PictureLikeRequest pictureLikeRequest,HttpServletRequest request) {
         //校验参数
-        ThrowUtils.throwIf(pictureLikeRequest == null || pictureLikeRequest.getPictureId() == null, ErrorCode.PARAMS_ERROR);
-        Long userId = pictureLikeRequest.getUserId();
-        Long pictureId = pictureLikeRequest.getPictureId();
+        ThrowUtils.throwIf(pictureLikeRequest == null , ErrorCode.PARAMS_ERROR);
         //调用Service
-        boolean result = likeRecordService.like(userId, pictureId);
+        LikeRecord likeRecord =new LikeRecord();
+        BeanUtils.copyProperties(pictureLikeRequest, likeRecord);
+        boolean result = likeRecordService.like(likeRecord,request);
         ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR,"点赞失败");
         //返回结果
-        return ResultUtils.success(result);
+        return ResultUtils.success(true);
     }
+
+    @PostMapping("/like/count")
+    public BaseResponse<Long> getPictureLikeCount(Long pictureId) {
+        ThrowUtils.throwIf(pictureId == null , ErrorCode.PARAMS_ERROR, "請輸入圖片Id");
+        try {
+            Long result = pictureService.getById(pictureId).getLikeCount();
+            return ResultUtils.success(result);
+        }catch (Exception e){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "請輸入正確的圖片Id");
+
+        }
+
+    }
+
 }
 
 

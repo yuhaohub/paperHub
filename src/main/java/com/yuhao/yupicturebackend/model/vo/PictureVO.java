@@ -41,8 +41,11 @@ public class PictureVO implements Serializable {
     /**  
      * 分类  
      */  
-    private String category;  
-  
+    private String category;
+    /**
+     * 点赞数
+     */
+    private Long likeCount;
     /**  
      * 文件体积  
      */  

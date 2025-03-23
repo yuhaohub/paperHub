@@ -121,6 +121,12 @@ public class Picture implements Serializable {
      * 审核时间
      */
     private Date reviewTime;
+    /**
+     * 点赞数
+     */
+    private Long likeCount;
+
+
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

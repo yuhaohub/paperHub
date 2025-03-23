@@ -1,7 +1,13 @@
 package com.yuhao.yupicturebackend.service;
 
-import com.yuhao.yupicturebackend.model.entity.LikeRecord;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yuhao.yupicturebackend.model.dto.picture.PictureLikeRequest;
+import com.yuhao.yupicturebackend.model.entity.LikeRecord;
+import com.yuhao.yupicturebackend.model.vo.PictureVO;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author hyh
@@ -12,7 +18,7 @@ public interface LikeRecordService extends IService<LikeRecord> {
     /**
      * 点赞
      */
-    boolean like(Long userId, Long pictureId);
+    boolean like(LikeRecord likeRecord, HttpServletRequest request);
     /**
      * 取消点赞
      */
@@ -20,9 +26,11 @@ public interface LikeRecordService extends IService<LikeRecord> {
     /**
      * 查询用户的点赞记录
      */
-    LikeRecord getUserLikeRecord(Long userId, Long pictureId);
+    List<PictureVO> getUserLikeRecord(Long userId);
     /**
      * 查询图片的点赞数
      */
     Integer getPictureLikeCount(Long pictureId);
+
+    QueryWrapper<LikeRecord> getQueryWrapper(PictureLikeRequest pictureLikeQueryRequest);
 }

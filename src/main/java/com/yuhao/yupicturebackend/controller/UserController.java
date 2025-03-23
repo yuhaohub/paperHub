@@ -12,7 +12,9 @@ import com.yuhao.yupicturebackend.exception.ThrowUtils;
 import com.yuhao.yupicturebackend.model.dto.user.*;
 import com.yuhao.yupicturebackend.model.entity.User;
 import com.yuhao.yupicturebackend.model.vo.LoginUserVO;
+import com.yuhao.yupicturebackend.model.vo.PictureVO;
 import com.yuhao.yupicturebackend.model.vo.UserVO;
+import com.yuhao.yupicturebackend.service.LikeRecordService;
 import com.yuhao.yupicturebackend.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +29,8 @@ public class UserController {
 
     @Resource
     private UserService userService;
-
+    @Resource
+    private LikeRecordService likeRecordService;
     /**
      * 用户注册
      */
@@ -181,5 +184,16 @@ public class UserController {
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
-    //
+
+    /**
+     * 查询该用户的点赞记录(图片列表)
+     */
+    @GetMapping("/like/Record")
+    public BaseResponse<List<PictureVO>> getUserLikeRecord(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        List<PictureVO> result = likeRecordService.getUserLikeRecord(loginUser.getId());
+        return ResultUtils.success(result);
+    }
+
+
 }

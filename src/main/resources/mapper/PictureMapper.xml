@@ -27,6 +27,7 @@
             <result property="reviewMessage" column="reviewMessage" jdbcType="VARCHAR"/>
             <result property="reviewTime" column="reviewTime" jdbcType="TIMESTAMP"/>
             <result property="reviewStatus" column="reviewStatus" jdbcType="INTEGER"/>
+            <result property="likeCount" column="likeCount" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -36,6 +37,6 @@
         picScale,picFormat,picColor,userId,spaceId,
         createTime,editTime,updateTime,
         isDelete,reviewerId,reviewMessage,
-        reviewTime,reviewStatus
+        reviewTime,reviewStatus,likeCount
     </sql>
 </mapper>
