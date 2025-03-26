@@ -20,13 +20,17 @@ import com.yuhao.yupicturebackend.manager.upload.UrlPictureUpload;
 import com.yuhao.yupicturebackend.mapper.PictureMapper;
 import com.yuhao.yupicturebackend.model.dto.file.UploadPictureResult;
 import com.yuhao.yupicturebackend.model.dto.picture.*;
+import com.yuhao.yupicturebackend.model.entity.ManagerSystemNotice;
 import com.yuhao.yupicturebackend.model.entity.Picture;
 import com.yuhao.yupicturebackend.model.entity.Space;
 import com.yuhao.yupicturebackend.model.entity.User;
+import com.yuhao.yupicturebackend.model.enums.NoticeTypeEnum;
+import com.yuhao.yupicturebackend.model.enums.NoticeUserEnum;
 import com.yuhao.yupicturebackend.model.enums.PictureReviewStatusEnum;
 import com.yuhao.yupicturebackend.model.enums.SpaceTypeEnum;
 import com.yuhao.yupicturebackend.model.vo.PictureVO;
 import com.yuhao.yupicturebackend.model.vo.UserVO;
+import com.yuhao.yupicturebackend.service.ManagerSystemNoticeService;
 import com.yuhao.yupicturebackend.service.PictureService;
 import com.yuhao.yupicturebackend.service.SpaceService;
 import com.yuhao.yupicturebackend.service.UserService;
@@ -71,7 +75,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     private TransactionTemplate transactionTemplate;
     @Resource
     private AliYunAiApi aliYunAiApi;
-
+    @Resource
+    private ManagerSystemNoticeService managerSystemNoticeService;
 
 
 
@@ -389,6 +394,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
      * @param loginUser
      */
     @Override
+    @Transactional
     public void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser) {
         Long id = pictureReviewRequest.getId();
         Integer reviewStatus = pictureReviewRequest.getReviewStatus();
@@ -409,6 +415,16 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         updatePicture.setReviewerId(loginUser.getId());
         updatePicture.setReviewTime(new Date());
         boolean result = this.updateById(updatePicture);
+        //插入到管理员系统通知表
+        ManagerSystemNotice managerSystemNotice = new ManagerSystemNotice();
+        managerSystemNotice.setManagerId(loginUser.getId());
+        managerSystemNotice.setTitle("图片审核通知");
+        managerSystemNotice.setType(NoticeTypeEnum.REVIEW.getValue());
+        managerSystemNotice.setContent("您的"+"localhost/picture/"+oldPicture.getId()+"图片审核结果为：" + PictureReviewStatusEnum.getEnumByValue(reviewStatus).getText());
+        managerSystemNotice.setUserType(NoticeUserEnum.SINGLE.getText());
+        managerSystemNotice.setRecipientId(oldPicture.getUserId());
+        managerSystemNotice.setPublishTime(new Date());
+        managerSystemNoticeService.getBaseMapper().insert(managerSystemNotice);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
     }
 

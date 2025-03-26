@@ -16,21 +16,15 @@ import java.util.List;
 */
 public interface LikeRecordService extends IService<LikeRecord> {
     /**
-     * 点赞
+     * 点赞/取消点赞
      */
     boolean like(LikeRecord likeRecord, HttpServletRequest request);
-    /**
-     * 取消点赞
-     */
-    void unlike(Long userId, Long pictureId);
+
     /**
      * 查询用户的点赞记录
      */
     List<PictureVO> getUserLikeRecord(Long userId);
-    /**
-     * 查询图片的点赞数
-     */
-    Integer getPictureLikeCount(Long pictureId);
+
 
     QueryWrapper<LikeRecord> getQueryWrapper(PictureLikeRequest pictureLikeQueryRequest);
 }

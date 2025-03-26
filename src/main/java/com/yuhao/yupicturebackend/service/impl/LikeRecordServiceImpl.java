@@ -86,10 +86,7 @@ public class LikeRecordServiceImpl extends ServiceImpl<LikeRecordMapper, LikeRec
         }
     }
 
-    @Override
-    public void unlike(Long userId, Long pictureId) {
 
-    }
 
     @Override
     public List<PictureVO> getUserLikeRecord(Long userId) {
@@ -104,10 +101,7 @@ public class LikeRecordServiceImpl extends ServiceImpl<LikeRecordMapper, LikeRec
         return pictureList.stream().map(PictureVO::objToVo).collect(Collectors.toList());
     }
 
-    @Override
-    public Integer getPictureLikeCount(Long pictureId) {
-        return null;
-    }
+
 
     @Override
     public QueryWrapper<LikeRecord> getQueryWrapper(PictureLikeRequest pictureLikeQueryRequest) {
