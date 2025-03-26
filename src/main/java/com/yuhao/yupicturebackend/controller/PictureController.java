@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/picture")
@@ -234,9 +235,21 @@ public class PictureController {
         // 查询数据库
         Page<Picture> picturePage = pictureService.page(new Page<>(current, size),
                 pictureService.getQueryWrapper(pictureQueryRequest));
+        //查询用户是否点赞图片
 
+        List<PictureVO> userLikeRecord = likeRecordService.getUserLikeRecord(userService.getLoginUser(request).getId());
+        //取出其中的picID
+        List<Long> picIds = userLikeRecord.stream().map(PictureVO::getId).collect(Collectors.toList());
+        //遍历返回的数据，如果picID在picIds中，则isLike为true
+        Page<PictureVO> pictureVOPage = pictureService.getPictureVOPage(picturePage, request);
+        for (PictureVO pictureVO : pictureVOPage.getRecords()) {
+            if (picIds.contains(pictureVO.getId())) {
+                pictureVO.setIsLike(true);
+            }
+        }
+        //统计
         // 获取封装类
-        return ResultUtils.success(pictureService.getPictureVOPage(picturePage, request));
+        return ResultUtils.success(pictureVOPage);
     }
     @PostMapping("/list/page/vo/cache")
     public BaseResponse<Page<PictureVO>> listPictureVOByPageWithCache(@RequestBody PictureQueryRequest pictureQueryRequest,

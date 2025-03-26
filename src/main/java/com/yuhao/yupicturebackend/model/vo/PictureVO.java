@@ -46,6 +46,10 @@ public class PictureVO implements Serializable {
      * 点赞数
      */
     private Long likeCount;
+    /**
+     * 当前用户是否点赞
+     */
+    private Boolean isLike = false;
     /**  
      * 文件体积  
      */  
