@@ -238,15 +238,19 @@ public class PictureController {
         //查询用户是否点赞图片
 
         List<PictureVO> userLikeRecord = likeRecordService.getUserLikeRecord(userService.getLoginUser(request).getId());
-        //取出其中的picID
-        List<Long> picIds = userLikeRecord.stream().map(PictureVO::getId).collect(Collectors.toList());
         //遍历返回的数据，如果picID在picIds中，则isLike为true
         Page<PictureVO> pictureVOPage = pictureService.getPictureVOPage(picturePage, request);
-        for (PictureVO pictureVO : pictureVOPage.getRecords()) {
-            if (picIds.contains(pictureVO.getId())) {
-                pictureVO.setIsLike(true);
+
+        //取出其中的picID
+        if(userLikeRecord != null){
+            List<Long> picIds = userLikeRecord.stream().map(PictureVO::getId).collect(Collectors.toList());
+            for (PictureVO pictureVO : pictureVOPage.getRecords()) {
+                if (picIds.contains(pictureVO.getId())) {
+                    pictureVO.setIsLike(true);
+                }
             }
         }
+
         //统计
         // 获取封装类
         return ResultUtils.success(pictureVOPage);
