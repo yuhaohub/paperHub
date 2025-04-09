@@ -17,7 +17,10 @@ public class NoticeVO {
      * REVIEW("审核通知",1);
      */
     int type ;
-
+    /**
+     * 消息标题
+     */
+    String title;
     /**
      * 消息内容
      */

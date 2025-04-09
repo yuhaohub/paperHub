@@ -443,6 +443,67 @@ public class PictureController {
 
     }
 
+    @PostMapping("/get/userPicture")
+    public BaseResponse<Page<PictureVO>> listPictureVOByUserId(@RequestBody PictureQueryRequest pictureQueryRequest,
+                                                             HttpServletRequest request){
+        long current = pictureQueryRequest.getCurrent();
+        long size = pictureQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        // 普通用户默认只能查看已过审的数据
+        pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
+        // 空间权限校验
+        Long spaceId = pictureQueryRequest.getSpaceId();
+        // 公开图库
+        if (spaceId == null) {
+            // 普通用户默认只能查看已过审的公开数据
+            pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
+            pictureQueryRequest.setNullSpaceId(true);
+        } else {
+            // 私有空间
+            //User loginUser = userService.getLoginUser(request);
+            Space space = spaceService.getById(spaceId);
+            ThrowUtils.throwIf(space == null, ErrorCode.NOT_FOUND_ERROR, "空间不存在");
+            //sa-token编程式权限校验
+            boolean hasPermission = StpKit.SPACE.hasPermission(SpaceUserPermissionConstant.PICTURE_VIEW);
+            ThrowUtils.throwIf(!hasPermission, ErrorCode.NO_AUTH_ERROR);
+        }
+
+        // 查询数据库
+        Page<Picture> picturePage = pictureService.page(new Page<>(current, size),
+                pictureService.getQueryWrapper(pictureQueryRequest));
+
+        //查询用户是否点赞图片
+        List<PictureVO> userLikeRecord = likeRecordService.getUserLikeRecord(userService.getLoginUser(request).getId());
+        //遍历返回的数据，如果picID在picIds中，则isLike为true
+        Page<PictureVO> pictureVOPage = pictureService.getPictureVOPage(picturePage, request);
+
+        //取出其中的picID
+        if(userLikeRecord != null){
+            List<Long> picIds = userLikeRecord.stream().map(PictureVO::getId).collect(Collectors.toList());
+            for (PictureVO pictureVO : pictureVOPage.getRecords()) {
+                if (picIds.contains(pictureVO.getId())) {
+                    pictureVO.setIsLike(true);
+                }
+            }
+        }
+        if(pictureQueryRequest.getUserId()!=null&&pictureQueryRequest.getLike()==0){
+            //个人主页查询，过滤掉其他用户作品
+            List<PictureVO> collect = pictureVOPage.getRecords().stream().filter(pictureVO -> pictureVO.getUserId() .equals(pictureQueryRequest.getUserId())).collect(Collectors.toList());
+            pictureVOPage.setRecords(collect);
+
+        }
+        if(pictureQueryRequest.getLike()==1){
+            //只返回点赞的作品
+            userLikeRecord.forEach(pictureVO -> pictureVO.setIsLike(true));
+            pictureVOPage.setRecords(userLikeRecord);
+            pictureVOPage.setTotal(userLikeRecord.size());
+        }
+        //统计
+        // 获取封装类
+        return ResultUtils.success(pictureVOPage);
+    }
+
 }
 
 

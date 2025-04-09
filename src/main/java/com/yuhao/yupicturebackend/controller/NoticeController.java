@@ -1,8 +1,10 @@
 package com.yuhao.yupicturebackend.controller;
 
 
+import com.yuhao.yupicturebackend.annotation.AuthCheck;
 import com.yuhao.yupicturebackend.common.BaseResponse;
 import com.yuhao.yupicturebackend.common.ResultUtils;
+import com.yuhao.yupicturebackend.constant.UserConstant;
 import com.yuhao.yupicturebackend.exception.ErrorCode;
 import com.yuhao.yupicturebackend.exception.ThrowUtils;
 import com.yuhao.yupicturebackend.model.entity.UserSystemNotice;
@@ -30,6 +32,7 @@ public class NoticeController {
     /**
      * 前段轮询接口
      */
+    @AuthCheck(mustRole = UserConstant.DEFAULT_ROLE)
     @GetMapping("//pull")
     public BaseResponse<List<NoticeVO>> noticePull(Long userId ){
         List<NoticeVO> notices = userSystemNoticeService.findNoticeByUserId(userId);

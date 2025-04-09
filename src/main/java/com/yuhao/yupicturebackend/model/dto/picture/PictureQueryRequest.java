@@ -71,7 +71,10 @@ public class PictureQueryRequest extends PageRequest implements Serializable {
      * 用户 id  
      */  
     private Long userId;
-
+    /**
+     * 查询用户点赞的=1代表返回点赞的,默认为0
+     */
+    private Integer like;
     /**
      * 状态：0-待审核; 1-通过; 2-拒绝
      */

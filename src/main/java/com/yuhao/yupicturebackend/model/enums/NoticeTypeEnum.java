@@ -8,7 +8,8 @@ import lombok.Getter;
 @Getter
 public enum NoticeTypeEnum {
     ANNOUNCEMENT("公告",0),
-    REVIEW("审核通知",1);
+    REVIEW("审核通知",1),
+    PRIVATE("私信",2);
 
     private final String text;
     private final int value;
