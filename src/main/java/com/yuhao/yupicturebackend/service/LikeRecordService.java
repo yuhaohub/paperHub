@@ -20,11 +20,15 @@ public interface LikeRecordService extends IService<LikeRecord> {
      */
     boolean like(LikeRecord likeRecord, HttpServletRequest request);
 
+    boolean likeUsingRedis(LikeRecord likeRecord, HttpServletRequest request);
+
     /**
      * 查询用户的点赞记录
      */
     List<PictureVO> getUserLikeRecord(Long userId);
 
+    //查询是否已点赞
+    Boolean hasLike(Long picId, Long userId);
 
     QueryWrapper<LikeRecord> getQueryWrapper(PictureLikeRequest pictureLikeQueryRequest);
 }

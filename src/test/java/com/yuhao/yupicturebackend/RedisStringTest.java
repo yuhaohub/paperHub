@@ -1,18 +1,27 @@
 package com.yuhao.yupicturebackend;
 
+import com.yuhao.yupicturebackend.constant.LikeConstant;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.redisson.api.RMap;
+import org.redisson.api.RedissonClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import javax.annotation.Resource;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = YuPictureBackendApplication.class)
+
 public class RedisStringTest {
 
-    @Autowired
+    @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    private RedissonClient redissonClient;
+
 
     @Test
     public void testRedisStringOperations() {
@@ -43,5 +52,13 @@ public class RedisStringTest {
         stringRedisTemplate.delete(key);
         storedValue = valueOps.get(key);
         assertNull(storedValue, "删除后的值不为空");
+    }
+    @Test
+    public void testRedisHashOperations(){
+        //assertNotNull(redisTemplate, "RedisTemplate 未正确注入");
+        //redisTemplate.opsForHash().put(LikeConstant.USER_THUMB_KEY_PREFIX+"1890648886621085698","1892092981809893378","1903631261953019906");
+        RMap<Object, Object> map = redissonClient.getMap(LikeConstant.USER_Like_KEY_PREFIX + "1890648886621085698");
+        map.put("1892092981809893378","1903631261953019906");
+        map.get(LikeConstant.USER_Like_KEY_PREFIX + "1890648886621085698");
     }
 }

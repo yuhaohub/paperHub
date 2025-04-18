@@ -424,7 +424,7 @@ public class PictureController {
         //调用Service
         LikeRecord likeRecord =new LikeRecord();
         BeanUtils.copyProperties(pictureLikeRequest, likeRecord);
-        boolean result = likeRecordService.like(likeRecord,request);
+        boolean result = likeRecordService.likeUsingRedis(likeRecord,request);
         ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR,"点赞失败");
         //返回结果
         return ResultUtils.success(true);
