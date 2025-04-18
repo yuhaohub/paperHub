@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.yuhao.yupicturebackend.constant.UserConstant.USER_LOGIN_STATE;
+
 @RestController
 @RequestMapping("/picture")
 public class PictureController {
@@ -235,9 +237,15 @@ public class PictureController {
         // 查询数据库
         Page<Picture> picturePage = pictureService.page(new Page<>(current, size),
                 pictureService.getQueryWrapper(pictureQueryRequest));
-        //查询用户是否点赞图片
-
-        List<PictureVO> userLikeRecord = likeRecordService.getUserLikeRecord(userService.getLoginUser(request).getId());
+        //如果用户已登录返回用户已点赞的设置为true，查询用户是否点赞图片
+        // 先判断是否已登录
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User currentUser = (User) userObj;
+        if (currentUser == null || currentUser.getId() == null) {
+            return  ResultUtils.success(pictureService.getPictureVOPage(picturePage, request));
+        }
+        Long userId = userService.getLoginUser(request).getId();
+        List<PictureVO> userLikeRecord = likeRecordService.getUserLikeRecord(userId);
         //遍历返回的数据，如果picID在picIds中，则isLike为true
         Page<PictureVO> pictureVOPage = pictureService.getPictureVOPage(picturePage, request);
 
