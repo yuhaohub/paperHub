@@ -39,4 +39,17 @@
         isDelete,reviewerId,reviewMessage,
         reviewTime,reviewStatus,likeCount
     </sql>
+    <update id="batchUpdateLikeCount">
+        UPDATE picture
+        SET likeCount = likeCount + CASE id
+        <foreach collection="countMap.entrySet()" item="value" index="key">
+            WHEN #{key} THEN  #{value}
+        </foreach>
+        END
+        WHERE id IN
+        <foreach collection="countMap.keySet()" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
 </mapper>

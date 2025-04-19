@@ -1,7 +1,10 @@
 package com.yuhao.yupicturebackend.mapper;
 
-import com.yuhao.yupicturebackend.model.entity.Picture;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yuhao.yupicturebackend.model.entity.Picture;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 /**
 * @author hyh
@@ -10,7 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.yuhao.yupicturebackend.model.entity.Picture
 */
 public interface PictureMapper extends BaseMapper<Picture> {
-
+            void batchUpdateLikeCount(@Param("countMap") Map<Long,Long> countMap);
 }
 
 

@@ -17,6 +17,7 @@ import com.yuhao.yupicturebackend.model.vo.UserVO;
 import com.yuhao.yupicturebackend.service.LikeRecordService;
 import com.yuhao.yupicturebackend.service.UserService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,6 +31,7 @@ public class UserController {
     @Resource
     private UserService userService;
     @Resource
+    @Qualifier("likeService")
     private LikeRecordService likeRecordService;
     /**
      * 用户注册

@@ -35,6 +35,7 @@ import com.yuhao.yupicturebackend.service.PictureService;
 import com.yuhao.yupicturebackend.service.SpaceService;
 import com.yuhao.yupicturebackend.service.UserService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.util.DigestUtils;
@@ -67,7 +68,8 @@ public class PictureController {
     @Resource
     private SpaceUserAuthManager spaceUserAuthManager;
     @Resource
-    private LikeRecordService likeRecordService;
+    @Qualifier("likeService")
+    private LikeRecordService likeService;
 
     //构造本地缓存
     private final Cache<String, String> LOCAL_CACHE =
@@ -245,7 +247,7 @@ public class PictureController {
             return  ResultUtils.success(pictureService.getPictureVOPage(picturePage, request));
         }
         Long userId = userService.getLoginUser(request).getId();
-        List<PictureVO> userLikeRecord = likeRecordService.getUserLikeRecord(userId);
+        List<PictureVO> userLikeRecord = likeService.getUserLikeRecord(userId);
         //遍历返回的数据，如果picID在picIds中，则isLike为true
         Page<PictureVO> pictureVOPage = pictureService.getPictureVOPage(picturePage, request);
 
@@ -429,10 +431,21 @@ public class PictureController {
     public BaseResponse<Boolean> likePicture(@RequestBody PictureLikeRequest pictureLikeRequest,HttpServletRequest request) {
         //校验参数
         ThrowUtils.throwIf(pictureLikeRequest == null , ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(pictureLikeRequest.getPicId()==null , ErrorCode.PARAMS_ERROR, "請輸入圖片Id");
+        try {
+            //判断图片是否存在
+            Picture result = pictureService.getById(pictureLikeRequest.getPicId());
+            if(result == null){
+                throw new BusinessException(ErrorCode.OPERATION_ERROR, "請輸入正確的圖片Id");
+            }
+        }catch (Exception e){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "請輸入正確的圖片Id");
+
+        }
         //调用Service
         LikeRecord likeRecord =new LikeRecord();
         BeanUtils.copyProperties(pictureLikeRequest, likeRecord);
-        boolean result = likeRecordService.likeUsingRedis(likeRecord,request);
+        boolean result = likeService.like(likeRecord,request);
         ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR,"点赞失败");
         //返回结果
         return ResultUtils.success(true);
@@ -482,7 +495,7 @@ public class PictureController {
                 pictureService.getQueryWrapper(pictureQueryRequest));
 
         //查询用户是否点赞图片
-        List<PictureVO> userLikeRecord = likeRecordService.getUserLikeRecord(userService.getLoginUser(request).getId());
+        List<PictureVO> userLikeRecord = likeService.getUserLikeRecord(userService.getLoginUser(request).getId());
         //遍历返回的数据，如果picID在picIds中，则isLike为true
         Page<PictureVO> pictureVOPage = pictureService.getPictureVOPage(picturePage, request);
 

@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 * @description 针对表【like_record(点赞记录表)】的数据库操作Service实现
 * @createDate 2025-03-03 14:42:46
 */
-@Service
+@Service("likeServiceDB")
 @RequiredArgsConstructor
 public class LikeRecordServiceImpl extends ServiceImpl<LikeRecordMapper, LikeRecord>
     implements LikeRecordService{

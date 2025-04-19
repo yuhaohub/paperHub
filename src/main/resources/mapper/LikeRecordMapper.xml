@@ -17,4 +17,15 @@
         id,picId,userId,
         status,createTime,updateTime
     </sql>
+    <insert id="batchInsertOrUpdate">
+        <if test="list != null and list.size() > 0">
+            INSERT INTO like_record (picId, userId, status)  <!-- 字段顺序需与唯一索引一致 -->
+            VALUES
+            <foreach collection="list" item="item" separator=",">
+                (#{item.picId}, #{item.userId}, #{item.status})  <!-- 对应实体类属性 -->
+            </foreach>
+            ON DUPLICATE KEY UPDATE status = VALUES(status)  <!-- 冲突时更新status字段 -->
+        </if>
+    </insert>
+
 </mapper>

@@ -1,7 +1,10 @@
 package com.yuhao.yupicturebackend.mapper;
 
-import com.yuhao.yupicturebackend.model.entity.LikeRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yuhao.yupicturebackend.model.entity.LikeRecord;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author hyh
@@ -10,7 +13,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.yuhao.yupicturebackend.model.entity.LikeRecord
 */
 public interface LikeRecordMapper extends BaseMapper<LikeRecord> {
+    /**
+     * 批量插入，冲突时更新status（MySQL专用）
+     */
 
+    int batchInsertOrUpdate(@Param("list") List<LikeRecord> recordList);
 }
 
 
