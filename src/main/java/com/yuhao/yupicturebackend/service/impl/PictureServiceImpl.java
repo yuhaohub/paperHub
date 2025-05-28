@@ -11,9 +11,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yuhao.yupicturebackend.api.aliyun.AliYunAiApi;
 import com.yuhao.yupicturebackend.api.aliyun.model.CreateOutPaintingTaskRequest;
 import com.yuhao.yupicturebackend.api.aliyun.model.CreateOutPaintingTaskResponse;
+import com.yuhao.yupicturebackend.config.CosClientConfig;
 import com.yuhao.yupicturebackend.exception.BusinessException;
 import com.yuhao.yupicturebackend.exception.ErrorCode;
 import com.yuhao.yupicturebackend.exception.ThrowUtils;
+import com.yuhao.yupicturebackend.manager.CosManager;
 import com.yuhao.yupicturebackend.manager.upload.FilePictureUpload;
 import com.yuhao.yupicturebackend.manager.upload.PictureUploadTemplate;
 import com.yuhao.yupicturebackend.manager.upload.UrlPictureUpload;
@@ -62,7 +64,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     implements PictureService{
-
+    @Resource
+    protected CosManager cosManager;
+    @Resource
+    protected CosClientConfig cosClientConfig;
     @Resource
     private FilePictureUpload filePictureUpload;
     @Resource
@@ -231,9 +236,13 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
                         .update();
                 ThrowUtils.throwIf(!update, ErrorCode.OPERATION_ERROR, "额度更新失败");
             }
+            // 清理cos中的文件
+            String host = cosClientConfig.getHost() + "/";
+            String key = oldPicture.getUrl().substring(host.length());
+            cosManager.deleteObject(key);
             return true;
         });
-        // todo 异步清理文件
+
         //this.clearPictureFile(oldPicture);
 
     }
