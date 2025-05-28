@@ -152,6 +152,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.rocketmq/rocketmq-spring-boot-starter -->
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-spring-boot-starter</artifactId>
+            <version>2.2.2</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -191,7 +197,7 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.yuhao.yupicturebackend.YuPictureBackendApplication</mainClass>
-                    <skip>true</skip>
+
                 </configuration>
                 <executions>
                     <execution>

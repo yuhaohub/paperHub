@@ -3,6 +3,7 @@ package com.yuhao.yupicturebackend.model.dto.picture;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 public class PictureUploadRequest implements Serializable {
@@ -20,6 +21,15 @@ public class PictureUploadRequest implements Serializable {
      */
     private String picName;
     /**
+     * 分类
+     */
+    private String category;
+
+    /**
+     * 标签
+     */
+    private List<String> tags;
+    /**
      * 图片主色调
      */
     private String picColor;
@@ -29,6 +39,7 @@ public class PictureUploadRequest implements Serializable {
      */
     private Long spaceId;
 
+    private Boolean isAvatar=false;
 
     private static final long serialVersionUID = 1L;  
 }

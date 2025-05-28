@@ -131,9 +131,14 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 上传图片，得到信息
         // 按照用户 id 划分目录 => 按照空间划分目录
         String uploadPathPrefix;
-        if (spaceId == null) {
+        //上传头像
+        if(pictureUploadRequest.getIsAvatar()){
+            uploadPathPrefix = String.format("avatar/%s", loginUser.getId());
+        }
+        else if (spaceId == null) {
             uploadPathPrefix = String.format("public/%s", loginUser.getId());
-        } else {
+        }
+        else {
             uploadPathPrefix = String.format("space/%s", spaceId);
         }
         // 根据 inputSource 类型区分上传方式
@@ -142,6 +147,12 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
             pictureUploadTemplate = urlPictureUpload;
         }
         UploadPictureResult uploadPictureResult = pictureUploadTemplate.uploadPicture(inputSource, uploadPathPrefix);
+        //上传头像
+        if(pictureUploadRequest.getIsAvatar()){
+           PictureVO res =  new PictureVO();
+           res.setUrl(uploadPictureResult.getUrl());
+            return res;
+        }
         // 构造要入库的图片信息
         Picture picture = new Picture();
         picture.setUrl(uploadPictureResult.getUrl());
@@ -159,6 +170,12 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         picture.setPicFormat(uploadPictureResult.getPicFormat());
         picture.setUserId(loginUser.getId());
         picture.setPicColor(uploadPictureResult.getPicColor());
+        if(pictureUploadRequest.getCategory()!=null){
+            picture.setCategory(pictureUploadRequest.getCategory());
+        }
+        if(pictureUploadRequest.getTags()!=null&&pictureUploadRequest.getTags().size()>0){
+            picture.setTags(JSONUtil.toJsonStr(pictureUploadRequest.getTags()));
+        }
         // 如果 pictureId 不为空，表示更新，否则是新增
         if (pictureId != null) {
             // 如果是更新，需要补充 id 和编辑时间
@@ -539,6 +556,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
                 pictureUploadRequest.setPicName(namePrefix + (uploadCount + 1));
             }
             try {
+                pictureUploadRequest.setCategory(pictureUploadByBatchRequest.getCategory());
+                pictureUploadRequest.setTags(pictureUploadByBatchRequest.getTags());
                 PictureVO pictureVO = this.uploadPicture(fileUrl, pictureUploadRequest, loginUser);
                 log.info("图片上传成功, id = {}", pictureVO.getId());
                 uploadCount++;

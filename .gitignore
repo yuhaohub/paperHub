@@ -34,3 +34,4 @@ build/
 ### application.yml ###
 application.yml
 application-local.yml
+/src/main/resources/application-prod.yml
